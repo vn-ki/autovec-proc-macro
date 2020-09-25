@@ -1,0 +1,7 @@
+error: custom attribute panicked
+ --> $DIR/compile-test-no-return.rs:2:1
+  |
+2 | #[autovec]
+  | ^^^^^^^^^^
+  |
+  = help: message: Function need to return a type

@@ -1,0 +1,7 @@
+error: custom attribute panicked
+ --> $DIR/compile-test-no-args.rs:2:1
+  |
+2 | #[autovec]
+  | ^^^^^^^^^^
+  |
+  = help: message: expected at least one argument
