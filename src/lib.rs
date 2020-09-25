@@ -48,7 +48,11 @@ pub fn autovec(_: TokenStream, input: TokenStream) -> TokenStream {
             syn::Pat::Tuple(ref t) => {
                 orig_func_input_names.push(quote! { #t });
                 func_input_names.push(quote! { arg1 })
-            }
+            },
+            syn::Pat::Struct(ref t) => {
+                orig_func_input_names.push(quote! { #t });
+                func_input_names.push(quote! { arg1 })
+            },
             _ => unimplemented!(),
         }
         let ty = arg.ty.clone();

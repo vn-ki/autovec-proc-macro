@@ -6,4 +6,5 @@ fn tests() {
     t.compile_fail("tests/compile-test-no-return.rs");
     t.pass("tests/compile-test-tuple.rs");
     t.pass("tests/compile-test-generic.rs");
+    t.pass("tests/compile-test-struct.rs");
 }
