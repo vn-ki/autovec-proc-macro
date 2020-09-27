@@ -12,6 +12,7 @@ proc-macro = true
 syn = { version = "1.0.41", features = ["extra-traits", "full", "fold"] }
 quote = "1.0"
 proc-macro2 = "1.0"
+itertools = "0.9"
 
 [[test]]
 name = "tests"

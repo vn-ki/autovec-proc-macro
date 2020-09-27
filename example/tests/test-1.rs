@@ -4,9 +4,10 @@ fn fn_3<X: Into<usize>, Y: Into<usize>>( a: X, b: Y, c: String) -> usize {
     return a.into() + b.into();
 }
 
-fn main() {
+#[test]
+fn test() {
     let a: Vec<usize> = vec![1, 2, 3, 0];
     let b: Vec<usize> = vec![3, 2, 0, 0];
     let c: Vec<String> = vec!["a".into(), "b".into(), "c".into(), "d".into()];
-    println!("{:?}", fn_3(a, b, c)); // [4), 4), 0, 0]
+    assert_eq!(vec![4, 4, 3, 0], fn_3(a, b, c));
 }
