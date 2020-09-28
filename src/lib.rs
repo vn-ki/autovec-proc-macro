@@ -25,13 +25,14 @@ pub fn autovec(_: TokenStream, input: TokenStream) -> TokenStream {
     let new_func_arg_types = transformed_args.2;
 
     let first_arg_name = &new_func_arg_names[0];
+    let rest_arg_names = &new_func_arg_names[1..];
     let zip_map_stmt = get_zip_map_stmts(&new_func_arg_names, &old_func_arg_names, &ast);
 
     TokenStream::from(quote! {
         #preamble fn #new_ident #fn_generics(#(#new_func_arg_names : #new_func_arg_types, )*) -> #return_type {
             let n = #first_arg_name.len();
             #(
-                if n != #new_func_arg_names.len() {
+                if n != #rest_arg_names.len() {
                     panic!(concat!(stringify!(#new_func_arg_names), " len does not match with other vectors"));
                 }
             )*
