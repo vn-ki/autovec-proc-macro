@@ -7,4 +7,6 @@ fn tests() {
     t.pass("tests/compile-test-tuple.rs");
     t.pass("tests/compile-test-generic.rs");
     t.pass("tests/compile-test-struct.rs");
+    t.pass("tests/compile-test-slice-pat.rs");
+    t.pass("tests/compile-test-tuple-struct.rs");
 }

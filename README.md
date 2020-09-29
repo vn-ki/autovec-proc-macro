@@ -81,3 +81,20 @@ cargo test && cargo test example
 ## TODO
 
 - [ ] Support more argument patterns (ref: [syn::Pat](https://docs.rs/syn/1.0.41/syn/enum.Pat.html), [rust patterns](https://doc.rust-lang.org/reference/patterns.html))
+  - [ ] `syn::Box`
+  - [x] `syn::Ident`
+  - [ ] `syn::Lit`
+  - [ ] `syn::Macro`
+  - [ ] `syn::Or`
+  - [ ] `syn::Path`
+  - [ ] `syn::Range`
+  - [ ] `syn::Reference`
+  - [ ] `syn::Rest`
+  - [x] `syn::Slice`
+  - [x] `syn::Struct`
+  - [x] `syn::Tuple`
+  - [x] `syn::TupleStruct`
+  - [ ] `syn::Type`
+  - [ ] `syn::Verbatim`
+  - [x] `syn::Wild`
+

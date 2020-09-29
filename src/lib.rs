@@ -1,6 +1,7 @@
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
+use syn::spanned::Spanned;
 use syn::{parse_macro_input, ItemFn};
 
 #[proc_macro_attribute]
@@ -59,11 +60,14 @@ fn get_preamble(sig: &syn::Signature) -> TokenStream2 {
     }
 }
 
-fn get_transformed_args(input: Vec<&syn::PatType>) -> (Vec<TokenStream2>, Vec<TokenStream2>, Vec<TokenStream2>) {
+fn get_transformed_args(
+    input: Vec<&syn::PatType>,
+) -> (Vec<TokenStream2>, Vec<TokenStream2>, Vec<TokenStream2>) {
     let no_args = input.len();
     let mut old_func_arg_names: Vec<TokenStream2> = Vec::with_capacity(no_args);
     let mut new_func_arg_names: Vec<TokenStream2> = Vec::with_capacity(no_args);
     let mut new_func_arg_types: Vec<TokenStream2> = Vec::with_capacity(no_args);
+    let mut arg_cnt: i32 = 1;
 
     for arg in input {
         match *arg.pat {
@@ -72,22 +76,25 @@ fn get_transformed_args(input: Vec<&syn::PatType>) -> (Vec<TokenStream2>, Vec<To
                 old_func_arg_names.push(quote! { #t });
                 let argname = syn::Ident::new(&format!("{}_vec", t), t.span());
                 new_func_arg_names.push(quote! { #argname });
-            },
-            syn::Pat::Tuple(ref t) => {
-                old_func_arg_names.push(quote! { #t });
-                new_func_arg_names.push(quote! { arg1 })
-            },
-            syn::Pat::Struct(ref t) => {
-                old_func_arg_names.push(quote! { #t });
-                new_func_arg_names.push(quote! { arg1 })
-            },
+            }
+            syn::Pat::Tuple(_)
+            | syn::Pat::Struct(_)
+            | syn::Pat::TupleStruct(_)
+            | syn::Pat::Slice(_)
+            | syn::Pat::Wild(_) => {
+                let pat = &arg.pat;
+                old_func_arg_names.push(quote! { #pat });
+                let arg_ident = syn::Ident::new(&format!("arg_{}", arg_cnt), arg.span());
+                new_func_arg_names.push(quote! { #arg_ident });
+                arg_cnt += 1;
+            }
             _ => unimplemented!(),
         }
         let ty = &arg.ty;
         new_func_arg_types.push(quote! { Vec<#ty> });
     }
 
-    return (old_func_arg_names, new_func_arg_names, new_func_arg_types)
+    return (old_func_arg_names, new_func_arg_names, new_func_arg_types);
 }
 
 fn get_return_type(ast: &syn::ItemFn) -> &syn::ReturnType {
@@ -106,17 +113,26 @@ fn get_new_return_type(op: &syn::ReturnType) -> TokenStream2 {
 }
 
 fn get_args(ast: &syn::ItemFn) -> Vec<&syn::PatType> {
-    let args: Vec<_> = ast.sig.inputs.iter().map(|f| match f {
-        syn::FnArg::Typed(p) => p,
-        _ => panic!("self not allowed"),
-    }).collect();
+    let args: Vec<_> = ast
+        .sig
+        .inputs
+        .iter()
+        .map(|f| match f {
+            syn::FnArg::Typed(p) => p,
+            _ => panic!("self not allowed"),
+        })
+        .collect();
     if args.len() == 0 {
         panic!("expected at least one argument")
     }
     args
 }
 
-fn get_zip_map_stmts(new_func_arg_names: &Vec<TokenStream2>, old_func_arg_names: &Vec<TokenStream2>, ast: &syn::ItemFn) -> TokenStream2 {
+fn get_zip_map_stmts(
+    new_func_arg_names: &Vec<TokenStream2>,
+    old_func_arg_names: &Vec<TokenStream2>,
+    ast: &syn::ItemFn,
+) -> TokenStream2 {
     let first_arg_name = &new_func_arg_names[0];
     let return_type = get_return_type(ast);
     let n = new_func_arg_names.len();
